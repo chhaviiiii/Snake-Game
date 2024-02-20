@@ -19,14 +19,13 @@ pygame.display.set_caption('Snake Game')
 # Load Images
 snake_head_img = pygame.image.load('snake-head.png')
 food_img = pygame.image.load('food.png')
-background_img = pygame.image.load('background.png')
+
 
 # Scale images
 snake_block = 20  # Increased snake size
 food_size = 20  # New variable for food size
 snake_head_img = pygame.transform.scale(snake_head_img, (snake_block, snake_block))
 food_img = pygame.transform.scale(food_img, (food_size, food_size))
-background_img = pygame.transform.scale(background_img, (width, height))
 
 clock = pygame.time.Clock()
 
@@ -51,12 +50,21 @@ def message(msg, color, y_displace=0):
         game_display.blit(mesg, text_rect)
         y_displace += line_spacing
 
+def show_score(score, color, font, size):
+    score_font = pygame.font.SysFont(font, size)
+    score_surface = score_font.render('Score: ' + str(score), True, color)
+    score_rect = score_surface.get_rect()
+    score_rect.midtop = (width/2, 15)
+    game_display.blit(score_surface, score_rect)
+
 
 def game_loop():
     game_over = False
+    score = 0
 
     while not game_over:
         game_close = False
+
 
         x1 = width / 2
         y1 = height / 2
@@ -91,7 +99,7 @@ def game_loop():
                 game_close = True
             x1 += x1_change
             y1 += y1_change
-            game_display.blit(background_img, (0, 0))
+            game_display.fill(black)
             game_display.blit(food_img, (foodx, foody))
             snake_head = [x1, y1]
             snake_list.append(snake_head)
@@ -103,6 +111,7 @@ def game_loop():
                     game_close = True
 
             our_snake(snake_block, snake_list)
+            show_score(score,white, 'consolas', 20)  # Display the score
             pygame.display.update()
 
             if x1 < foodx + food_size and x1 + snake_block > foodx and \
@@ -110,12 +119,13 @@ def game_loop():
                 foodx = round(random.randrange(0, width - food_size) / 10.0) * 10.0
                 foody = round(random.randrange(0, height - food_size) / 10.0) * 10.0
                 length_of_snake += 1
+                score += 1
 
             clock.tick(snake_speed)
 
         while game_close:
             game_display.fill(black)
-            message("You Lost!" + "\n"
+            message("Score: " + str(score) + "\n" +
                                   "Press Q to Quit" + "\n"
                                                       "Press R to Restart", white)
 
